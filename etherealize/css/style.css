@@ -4,6 +4,10 @@
  * Thematic Webs
  */
 
+ .filter-tabs > .filter:hover{
+	 cursor:default;
+ }
+
 
 .page-wraper {
 	position:relative;

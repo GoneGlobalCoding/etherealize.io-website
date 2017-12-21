@@ -2,7 +2,74 @@
 /*****	One Page Menu *****/
 
 jQuery(function($){
+
 	
+	/*****  Send mail   *****/
+	$(document).on("submit",'.contact-form', function (event) {
+		/********************************
+		 STOP THE BROWSER FROM SUBMITTING THE FORM
+		*********************************/
+		$("#submitButton").attr('disabled','disabled');
+		$('#submitLoader').show();
+		$('#successMessage').hide();
+		$('#errorMessage').hide();
+		event.preventDefault();
+		var email = $("#contactEmail").val();
+		var name = $("#contactEmail").val();
+		var subject = $("#contactSubject").val();
+		var category = $("#contactCategory").val();
+		var message = $("#contactMessage").val();
+		var data = {
+			"email" : email,
+			"name" : name,
+			"subject" : subject,
+			"category" : category,
+			"message" : message
+		}
+		sendMail(data,function(error,response){
+			$("#submitButton").removeAttr('disabled');
+			$('#submitLoader').hide();
+			switch(error){
+				case null:
+					successMail()
+					break;
+				case "error":
+					errorMail(response.responseText)
+					break;
+				default:
+					console.log(error)
+					console.log(response)
+					break;
+			}
+		});
+	});
+
+	function successMail(){
+		$('#successMessage').show();
+	}
+
+	function errorMail(message){
+		$('#errorMessage').show();
+		var messageArray = $.parseJSON(message);
+		var errorMessage = messageArray['response'];
+		$('#errMessage').html(errorMessage);
+
+	}
+
+	function sendMail(data,callback){
+		$.ajax({
+			url: 'contact.php',
+			method: 'POST',
+			data: data,
+			contentType: "application/x-www-form-urlencoded",
+			success: function (payload) {
+				callback(null,payload);
+			},
+			error: function (payload) {
+				callback("error",payload)
+			}
+		});
+	}
 	/*** Navigation in responsive layouts 
 	--------------------------------------------------- ****/
 	$('.navbar .navbar-nav').clone(true).appendTo('body').wrap('<nav class="nav-tablet"></nav>');
